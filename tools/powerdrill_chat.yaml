@@ -1,0 +1,30 @@
+identity:
+  name: powerdrill_chat
+  author: qingye
+  label:
+    en_US: powerdrill_chat
+    zh_Hans: powerdrill_chat
+    pt_BR: powerdrill_chat
+description:
+  human:
+    en_US: powerdrill chat plugin
+    zh_Hans: powerdrill chat plugin
+    pt_BR: powerdrill chat plugin
+  llm: powerdrill chat plugin
+parameters:
+  - name: query
+    type: string
+    required: true
+    label:
+      en_US: Query string
+      zh_Hans: 查询语句
+      pt_BR: Query string
+    human_description:
+      en_US: powerdrill chat plugin
+      zh_Hans: powerdrill chat plugin
+      pt_BR: powerdrill chat plugin
+    llm_description: powerdrill chat plugin
+    form: llm
+extra:
+  python:
+    source: tools/powerdrill_chat.py

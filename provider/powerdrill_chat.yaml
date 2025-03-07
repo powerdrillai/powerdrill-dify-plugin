@@ -1,0 +1,17 @@
+identity:
+  author: qingye
+  name: powerdrill_chat
+  label:
+    en_US: powerdrill_chat
+    zh_Hans: powerdrill_chat
+    pt_BR: powerdrill_chat
+  description:
+    en_US: powerdrill chat plugin
+    zh_Hans: powerdrill chat plugin
+    pt_BR: powerdrill chat plugin
+  icon: icon.svg
+tools:
+  - tools/powerdrill_chat.yaml
+extra:
+  python:
+    source: provider/powerdrill_chat.py
