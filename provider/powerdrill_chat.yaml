@@ -9,7 +9,7 @@ identity:
     en_US: powerdrill chat plugin
     zh_Hans: powerdrill chat plugin
     pt_BR: powerdrill chat plugin
-  icon: icon.svg
+  icon: icon.png
 tools:
   - tools/powerdrill_chat.yaml
 extra:

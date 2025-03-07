@@ -1,29 +1,87 @@
 identity:
   name: powerdrill_chat
-  author: qingye
+  author: QCTC
   label:
-    en_US: powerdrill_chat
-    zh_Hans: powerdrill_chat
-    pt_BR: powerdrill_chat
+    en_US: Powerdrill Chat
+    zh_Hans: Powerdrill 对话
 description:
   human:
-    en_US: powerdrill chat plugin
-    zh_Hans: powerdrill chat plugin
-    pt_BR: powerdrill chat plugin
-  llm: powerdrill chat plugin
+    en_US: Chat with Powerdrill knowledge base
+    zh_Hans: 与 Powerdrill 知识库对话
+  llm: A tool for chatting with Powerdrill knowledge base using API
 parameters:
-  - name: query
+  - name: base_url
     type: string
     required: true
     label:
-      en_US: Query string
-      zh_Hans: 查询语句
-      pt_BR: Query string
+      en_US: Base URL
+      zh_Hans: 基础 URL
     human_description:
-      en_US: powerdrill chat plugin
-      zh_Hans: powerdrill chat plugin
-      pt_BR: powerdrill chat plugin
-    llm_description: powerdrill chat plugin
+      en_US: Powerdrill API base URL
+      zh_Hans: Powerdrill API 基础 URL
+    llm_description: The base URL for Powerdrill API service
+    form: form
+    default: "http://10.107.0.210:3300/api/v2"
+  
+  - name: user_id
+    type: string
+    required: true
+    label:
+      en_US: User ID
+      zh_Hans: 用户 ID
+    human_description:
+        en_US: Your Powerdrill user ID
+        zh_Hans: 你的 Powerdrill 用户 ID
+    llm_description: The user ID for authenticating with Powerdrill service
+    form: form
+  
+  - name: api_key
+    type: string
+    required: true
+    label:
+      en_US: API Key
+      zh_Hans: API 密钥
+    human_description:
+      en_US: Your Powerdrill temspace project API key
+      zh_Hans: 你的 Powerdrill Teamspace Project API 密钥
+    llm_description: The API key for authenticating with Powerdrill service
+    form: form
+    sensitive: true
+
+  - name: dataset_id
+    type: string
+    required: true
+    label:
+      en_US: Dataset ID
+      zh_Hans: 数据集 ID
+    human_description:
+      en_US: The ID of the Powerdrill dataset
+      zh_Hans: Powerdrill 数据集的 ID
+    llm_description: The identifier of the dataset to query in Powerdrill
+    form: form
+
+  - name: datasource_id
+    type: string
+    required: true
+    label:
+      en_US: Datasource ID
+      zh_Hans: 数据源 ID
+    human_description:
+      en_US: The ID of the Powerdrill datasource
+      zh_Hans: Powerdrill 数据源的 ID
+    llm_description: The identifier of the datasource to query in Powerdrill
+    form: form
+
+  - name: question
+    type: string
+    required: true
+    label:
+      en_US: Question
+      zh_Hans: 问题
+    human_description:
+      en_US: The question you want to ask
+      zh_Hans: 你想要询问的问题
+    llm_description: The question to be answered using the Powerdrill knowledge base
     form: llm
 extra:
   python:
