@@ -62,14 +62,14 @@ parameters:
 
   - name: datasource_id
     type: string
-    required: true
+    required: false
     label:
-      en_US: Datasource ID
+      en_US: Datasource ID.
       zh_Hans: 数据源 ID
     human_description:
-      en_US: The ID of the Powerdrill datasource
-      zh_Hans: Powerdrill 数据源的 ID
-    llm_description: The identifier of the datasource to query in Powerdrill
+      en_US: The ID of the Powerdrill datasource. If not provided, the whole dataset will be queried.
+      zh_Hans: Powerdrill 数据源的 ID. 如果未提供，将查询整个数据集
+    llm_description: The identifier of the datasource to query in Powerdrill. If not provided, the whole dataset will be queried.
     form: form
 
   - name: question
@@ -83,6 +83,19 @@ parameters:
       zh_Hans: 你想要询问的问题
     llm_description: The question to be answered using the Powerdrill knowledge base
     form: llm
+    
+  - name: with_citation
+    type: boolean
+    required: false
+    label:
+      en_US: With Citation
+      zh_Hans: 包含引用
+    human_description:
+        en_US: Whether to include citation in the answer
+        zh_Hans: 回答是否包含引用
+    llm_description: Whether to include citation in the answer
+    form: form
+    default: false
 extra:
   python:
     source: tools/powerdrill_chat.py

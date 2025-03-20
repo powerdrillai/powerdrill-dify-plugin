@@ -1,12 +1,12 @@
 from collections.abc import Generator
-from typing import Any
+from typing import Any, Optional
 
 import requests
 from dify_plugin import Tool
 from dify_plugin.entities.tool import ToolInvokeMessage
 
 class PowerdrillChatTool(Tool):
-    _sessions: dict[str, str] = {}
+    _sessions: dict[str, str] = {}  # user_id -> session_id mapping
 
     def _get_session(self, *, user_id: str, headers: dict[str, str], base_url: str) -> str:
         """Get or create a session for the user"""
@@ -17,7 +17,7 @@ class PowerdrillChatTool(Tool):
         # Create new session
         url = f"{base_url}/team/sessions"
         payload = {
-            "name": f"Session for {user_id}",
+            "name": f"Dify session for {user_id}",
             "user_id": user_id,
             "output_language": "AUTO",
             "job_mode": "AUTO",
@@ -39,21 +39,30 @@ class PowerdrillChatTool(Tool):
             question: str,
             user_id: str,
             dataset_id: str,
-            datasource_id: str,
+            datasource_id: Optional[str],
+            with_citation: bool,
             headers: dict[str, str],
-            base_url: str
+            base_url: str,
     ) -> dict[str, Any]:
         """Create a new job (chat) in the session"""
         url = f"{base_url}/team/jobs"
+        
+        # Split datasource_id by comma if given
+        datasource_id_list: list[str] = datasource_id.split(",") if datasource_id else []
+        # trim the datasource_id_list
+        datasource_id_list = [ds_id.strip() for ds_id in datasource_id_list]
 
         payload = {
             "session_id": session_id,
             "user_id": user_id,
             "dataset_id": dataset_id,
-            "datasource_ids": [datasource_id],
+            "datasource_ids": datasource_id_list if len(datasource_id_list) > 0 else None,
             "stream": False,
             "question": question,
             "output_language": "AUTO",
+            "custom_options": {
+                "with_citation": with_citation
+            },
             "job_mode": "AUTO"
         }
 
@@ -68,7 +77,7 @@ class PowerdrillChatTool(Tool):
         # Validate required parameters
         required_params = [
             "api_key", "base_url", "user_id", "question",
-            "dataset_id", "datasource_id"
+            "dataset_id"
         ]
 
         for param in required_params:
@@ -84,7 +93,8 @@ class PowerdrillChatTool(Tool):
         base_url: str = tool_parameters["base_url"]
         question: str = tool_parameters["question"]
         dataset_id: str = tool_parameters["dataset_id"]
-        datasource_id: str = tool_parameters["datasource_id"]
+        datasource_id: Optional[str] = tool_parameters.get("datasource_id")
+        with_citation: bool = tool_parameters.get("with_citation", False)
 
         # Prepare headers
         headers: dict[str, str] = {
@@ -106,15 +116,33 @@ class PowerdrillChatTool(Tool):
             user_id=powerdrill_user_id,
             dataset_id=dataset_id,
             datasource_id=datasource_id,
+            with_citation=with_citation,
             headers=headers,
-            base_url=base_url
+            base_url=base_url,
         )
 
         # Process response
         blocks: list[dict[str, Any]] = job_response.get("blocks", [])
 
+        citations: list[str] = []
         for block in blocks:
-            # TODO: handle other block types
             if block['type'] == 'MESSAGE':
                 yield self.create_text_message(text=block.get("content", ""))
+            elif block['type'] == 'SOURCES' and with_citation:
+                content: list[dict[str, str]] = block.get("content", [])
+                for source_dict in content:
+                    if source := source_dict.get("source"):
+                        citations.append(source)
+            elif block['type'] == 'IMAGE':
+                content: dict[str, str] = block.get("content", {})
+                if url := content.get("url"):
+                    yield self.create_image_message(image_url=url)
+            else:
+                # TODO: Handle other block types
+                pass
+        
+        if citations:
+            yield self.create_text_message(text="\n\nCitations:")
+            for i, citation in enumerate(citations):
+                yield self.create_text_message(text=f"\n{i+1}. {citation}")
 
